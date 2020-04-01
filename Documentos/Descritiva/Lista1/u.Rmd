@@ -1,0 +1,535 @@
+---
+title: "u.Rmd"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+- \usepackage{graphicx}
+- \usepackage[utf8]{inputenc}
+- \usepackage{amssymb}
+- \usepackage{amsmath}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r,echo=FALSE}
+library(xlsx)
+setwd("/home/emanuelhark/Documentos/Descritiva/Lista1")
+dados_lista1_1 <- read.xlsx('rehabcardio.xlsx',1,colClasses = c('numeric','character','character','character','Date','Date','Date','numeric','character','character','character','numeric','numeric','character','character','character','numeric','numeric','numeric','numeric','numeric','numeric','numeric','character','character','character','character','character','character','character','character','character','numeric','numeric','character','character','character','character','Date','character','Date','Date','Date','Date'))
+attach(dados_lista1_1)
+```
+### Variáveis qualitativas
+
+Nós separaremos as variaveis em variàveis qualitativas, que são Gênero, Origem, Grupo, IAM1, RM1,ATC1, Tabagismo, Diabete, HA, Aspirina, Betabloc, Nitrato, Hipolip, IECA, CA, Diuretico, Digit, Outros, Isquemia, RM2, ATC2.
+
+```{r,echo=FALSE}
+library(knitr)
+library(magrittr)
+library(kableExtra)
+abc <- function(y,z,t,u){
+  x <- summary(y)
+  if (length(x) < 3){
+    nomes <- c(z,t)
+    frequencia <- c(x[1],x[2])
+    freqrelat <- c(format(round(x[1]/(x[1]+x[2])* 100, 0), nsmall = 0),format(round(x[2]/(x[1]+x[2])* 100, 0), nsmall = 0))
+    freqrelabs <- c(format(round(x[1]/(x[1]+x[2])* 100, 0), nsmall = 0),100)
+    dfa <- data.frame(nomes,frequencia,freqrelat,freqrelabs)
+    names(dfa) <- c(u,'Frêquencia observada','Frêquencia relativa (%)', 'Frequência acumulada(%)')
+    tba <- kable(dfa,booktabs=F,caption = sprintf("Distribuição de frequência %s",u),'latex') %>%
+      kable_styling(latex_options =c("striped", "HOLD_position"),full_width = T,fixed_thead = TRUE) 
+    tba
+  }
+  else{
+    nomes <- c(z,t,'Não Observados')
+    frequencia <- c(x[2],x[1],x[3])
+    freqrelat <- c(format(round(x[2]/(x[1]+x[2]+x[3]) * 100,0),nsmall=0) ,                          format(round(x[1]/(x[1]+x[2]+x[3]) * 100,0),nsmall=0),format(round(x[3]/(x[1]+x[2]+x[3])*100,0),nsmall=0))
+    freqrelabs <- c(format(round(x[2]/(x[1]+x[2]+x[3]) * 100,0),nsmall = 0)
+    ,format(round((x[2]/(x[1]+x[2]+x[3]))+(x[1]/(x[1]+x[2]+x[3])) * 100,0),nsmall = 0),100)
+    dfa <- data.frame(nomes,frequencia,freqrelat,freqrelabs)
+    names(dfa) <- c(u,'Frêquencia observada','Frêquencia relativa (%)', 'Frequência acumulada(%)')
+    tba <- kable(dfa,booktabs=T,caption = sprintf("Distribuição de frequência %s",u),'latex') %>%
+      kable_styling(latex_options =c("striped", "HOLD_position"),full_width = T,fixed_thead = TRUE) 
+    tba
+  }
+}
+```
+
+```{r,echo=FALSE}
+tab_genero <- abc(Genero,'Feminino','Masculino','Gênero')
+tab_genero
+```
+
+Percebe-se que há preferencialmente membros do sexo masculino dentro dessa amostra.
+
+```{r,echo=FALSE}
+tab_origem <- abc(Origem,'Núcleo de Cardiologia e Medicina do Exercício','Clínica Cardiosport','Local do Tratamento')
+tab_origem
+```
+
+Percebe-se que houve mais pessoas sendo acompanhadas pela Clínica do que no np Núcleo de Cardiologia.
+
+```{r,echo=FALSE}
+tab_grupo <- abc(Grupo,'Clínico','Intervencionista','Tipo de Tratamento')
+tab_grupo
+```
+
+Percebe-se que houve mais pessoas acompanhadas pelo tratamento intervencionista do que pelo tratamento clínico.
+
+```{r,echo=FALSE}
+tab_iam1 <- abc(IAM1,'Sim','Não','1º Infarto agudo do miocárdio')
+tab_iam1
+```
+
+Percebe-se que, entre as pessoas amostradas, teve uma grande parcela deles que tiveram, pelo menos um IAM(Infarto agudo do miocárdio) e também teve uma parcela pequena que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_atc4 <- abc(ATC1,'Sim','Não',' 1ª Angioplastia Transluminal Coronariana')
+tab_atc4
+```
+
+Percebe-se que, entre as pessoas que participaram da pesquisa, teve uma grande parcela que não fizeram ATC(Angioplastua Transluminal Coronariana) mesmo que número nem tão pequeno de pessoas que fizeram este procedimento. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_rm1 <- abc(RM1,'Sim','Não','1ª Revascularização Miocárdica')
+tab_rm1
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, uma grande parcela das pessoas que não fizeram RM(Revascularização Miocárdica) mesmo que número nem tão pequeno de pessoas que fizeram este procedimento. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_tabag <-abc(Tabagismo,'Fumante','Não Fumante','Tabagismo')
+tab_tabag
+```
+
+Percebe-se que há, entre as pessoas que fizeram o tratamento, há uma maioria de fumantes entre eles. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_diab <- abc(Diabete,'Diabético','Não Diabético','Diabetes')
+tab_diab
+```
+
+Percebe-se que há, entre as pessoas que fizeram o tratamento, há uma maioria de não diabéticos dentro da amostra. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_ha <- abc(HA,'Sim','Não','Hipertensão Arterial')
+tab_ha
+```
+
+Percebe-se que, entre as pessoas amostradas, há uma maioria que possuem hipertensão arterial. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_asp <- abc(Aspirina,'Usa','Não Usa','Aspirina')
+tab_asp
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, há uma maioria que utiliza o remédio que possuem aspirina. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_bet <- abc(Betabloc,'Usa','Não Usa','Betabloqueador')
+tab_bet
+```
+
+Percebe-se que, entre as pessoas amostradas, há uma pequena variação entre os utilizadores ou não de  remédios que possuem betabloqueadores. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_nit <- abc(Nitrato,'Usa','Não Usa','Nitrato')
+tab_nit
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, há uma maioria que utiliza remédios que possuem nitrato. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_hip <- abc(Hipolip,'Usa','Não Usa','Estatina')
+tab_hip
+```
+
+Percebe-se que, entre as pessoas amostradas, há uma maioria que não utilizada remédios que possuem Estatina.Houve também uma pequena parcela que não responderam esta questão.
+ 
+```{r,echo=FALSE}
+tab_ieca <- abc(IECA,'Usa','Não Usa','Inibidor da enzima conversora de angiotensina ')
+tab_ieca
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, há uma maioria que não utiliza IECA(Inibidor de enzima conversora de angiotensina). Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_ca <- abc(CA,'Usa','Não Usa','Antagonistas dos canais de cálcio')
+tab_ca
+```
+
+Percebe-se, que entre as pessoas amostradas, há uma maioria que não utiliza remédios antagonistas dos canais de cálcio. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_diu <- abc(Diuretico,'Usa','Não Usa','Diuretico')
+tab_diu
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, há uma maioria que não utiliza remédios diuréticos, com um número pequeno de pessoas que utilizam este remédio. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_dig <- abc(Digit,'Usa','Não Usa','Digit')
+tab_dig
+```
+
+Percebe-se que, entre as pessoas amostradas, há uma maioria que não utiliza remédios diuréticos, com um número pequeno de pessoas que utilizam digit. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_out <- abc(Outros,'Usa','Não Usa','Outros')
+tab_out
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, há uma maioria que  utiliza outros tipos de remédios. Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_isq <- abc(Isquemia,'Isquêmico','Não Isquêmico','Isquêmia')
+tab_isq
+```
+
+Percebe-se que, entre as pessoas amostradas, há uma pequena variação entre as pessoas que tem ou não isquêmia cardiáca, tendo o maior número os casos ocorridos da doença.  Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_rm2 <- abc(RM2,'Sim','Não','2ª Revascularização Cirúrgica')
+tab_rm2
+```
+
+Percebe-se que, entre as pessoas que fizeram o tratamento, pouquissímas pessoas que fizeram o 2º RM(Revascularização Miocárdica). Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_atc2 <- abc(ATC2,'Sim','Não','2ª Angioplastia Transluminal Coronariana')
+tab_atc2
+```
+
+Percebe-se que , entre as pessoas amostradas, poucas pessoas que fizeram o 2º ATC(Angioplastia Transluminal Coronariana). Houve também uma pequena parcela que não responderam esta questão.
+
+```{r,echo=FALSE}
+tab_iam2 <- abc(IAM2,'Sim','Não','2º Infarto agudo do miocárdio')
+tab_iam2
+
+```
+
+Percebe-se que , entre as pessoas amostradas, poucas pessoas que fizeram o 2º IAM(Infarto Agudo do Miocárdio). Houve também uma pequena parcela que não responderam esta questão.
+
+### Variáveis quantitativas
+
+Entre as variàveis, as qualitativas são Lesões, Peso, Altura, Colesterol total(Coltot), HDL, LDL, Triglicerídeos(Triglic), Glicose, Acído Uríco(Acurico), Números de medicamentos(Nummed) e  Tempo de Esforço (Tempesforco).
+
+```{r,echo=FALSE}
+csa <- function(w){
+  u <- summary(w)
+  min <- as.numeric(u[1])
+  quart1 <- as.numeric(u[2])
+  median <- as.numeric(u[3])
+  media <- as.numeric(u[4])
+  quart2 <- as.numeric(u[5])
+  max <- as.numeric(u[6])
+  na <- as.numeric(u[7])
+  desvio <- sqrt(var(u,na.rm=TRUE))
+  df <- data.frame(min,quart1,median,media,quart2,max,desvio,na)
+
+  df
+}
+```
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+freq_lesoes <- table(Lesoes,useNA = c('ifany'))
+df_lesoes <- data.frame('Nº de pacientes',freq_lesoes[1],freq_lesoes[2],freq_lesoes[3],freq_lesoes[4])
+names(df_lesoes) <- c('Nº de lesões','1','2','3','NA')
+tab_lesoes <- kable(df_lesoes,booktabs=T,caption = 'Número de ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_lesoes
+df2_lesoes <- data.frame(Lesoes)
+hist_lesoes <- ggplot(na.omit(df2_lesoes),aes(x=Lesoes)) + geom_bar() + xlab('Lesões') + ylab('Quantidade de pessoas ') + ggtitle('Gráfico de barra da variável Lesões') + theme(plot.title = element_text(hjust = 0.5))
+hist_lesoes
+
+```
+
+Como a variável Lesoes é discreta, nota-se que os números de pacientes decai com o aumento do número de lesões, mostrando um comportamento decrescente.
+
+```{r,echo=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+df_peso <- csa(Peso)
+names(df_peso) <- c('Mínimo (Kg)','1º Quartil (Kg)','Mediana (Kg)','Média (Kg)','3º Quartil (Kg)', 'Máximo (Kg)','Desvio Padrão (Kg)')
+tab_peso <- kable(df_peso,booktabs=T,caption = 'Medidas de posição e de disperção da variável PESO ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_peso
+df2_peso <- data.frame(Peso)
+hist_peso <- ggplot(na.omit(df2_peso),aes(x=Peso)) + geom_histogram(binwidth = 10) + ggtitle('Histograma da variável Peso') +  theme(plot.title = element_text(hjust = 0.5))
+hist_peso 
+box_peso <- ggplot(na.omit(df2_peso),aes(y=Peso)) + geom_boxplot() + ggtitle('Boxplot da variável Peso') +  theme(plot.title = element_text(hjust = 0.5))
+box_peso
+
+```
+
+Como a variável Peso é contínua, nota-se que o comportamento do dados é aproximadanete normal, tendo três valores discrepantes superiores.
+
+```{r,echo=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_altura <- summary(Altura)
+df_altura <- csa(Altura)
+names(df_altura) <- c('Mínimo (m)','1º Quartil (m)','Mediana (m)','Média (m)','3º Quartil (m)', 'Máximo (m)','Desvio Padrão (m)')
+tab_altura <- kable(df_altura,booktabs=T,caption = 'Medidas de posição e de disperção da variável Altura ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_altura
+df2_altura <- data.frame(Altura)
+hist_altura <- ggplot(na.omit(df2_altura),aes(x=Altura)) + geom_histogram(bins = 10,size=0.2) + ylab('Quantidade de Pessoas')  + ggtitle('Histograma da variável Altura') +  theme(plot.title = element_text(hjust = 0.5))
+hist_altura 
+box_altura <- ggplot(na.omit(df2_altura),aes(y=Altura)) + geom_boxplot(size=0.2) + ggtitle('Boxplot da variável Altura') + theme(plot.title = element_text(hjust = 0.5))
+box_altura
+u1_altura = (Altura-resumo_altura[3])
+v1_altura = (rev(Altura)-resumo_altura[3])
+simetria_altura <- ggplot(na.omit(df2_altura),aes(x=na.omit(u1_altura),na.omit(v1_altura))) + geom_point() + geom_line(aes(x=na.omit(v1_altura),na.omit(v1_altura)),linetype='dashed') + xlab('Dispersão Inferior') + ylab('Dispersão Superior') + ggtitle('Gráfico de simetria da variável Altura') +  theme(plot.title = element_text(hjust = 0.5))
+simetria_altura
+
+```
+
+Como a variável Altura é contínua, nota-se que a variável Altura possui um comportamento  pouco parecido com a normal, porém dado que possui assimetria, ela perde força nessa característica.
+
+```{r,echo=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+df_coltot <- csa(Coltot)
+names(df_coltot) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+tab_coltot <- kable(df_coltot,booktabs=T,caption = 'Medidas de posição e de disperção da variável Colesterol Total ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_coltot
+df2_coltot <- data.frame(Coltot)
+hist_coltot <- ggplot(na.omit(df2_coltot),aes(x=Coltot)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("Colesterol Total(mg/100ml)") + ggtitle('Histograma da variável Colesterol Total') +  theme(plot.title = element_text(hjust = 0.5))
+hist_coltot
+box_coltot <- ggplot(na.omit(df2_coltot),aes(y=Coltot)) + geom_boxplot() + ylab('Colesterol Total(mg/100ml)') + ggtitle('Boxplot da variável Colesterol Total') +  theme(plot.title = element_text(hjust = 0.5))
+box_coltot
+sort_coltot <- sort(Coltot)
+Coltot2 <- sort_coltot[15:312]
+
+df3_coltot <- csa(Coltot2)
+names(df3_coltot) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+tab2_coltot <- kable(df3_coltot,booktabs=T,caption = 'Medidas de posição e de disperção da variável Colesterol Total Aparada ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab2_coltot
+df4_coltot <- data.frame(Coltot2)
+hist2_coltot <- ggplot(df4_coltot,aes(x=Coltot2)) + geom_histogram(binwidth = 30) +  ylab('Quantidade de Pessoas') + xlab('Colesterol Total Aparada(5%)(mg/100ml)') + ggtitle('Histograma da variável Colesterol Total Aparada (5%)') + theme(plot.title = element_text(hjust = 0.5))
+hist2_coltot
+box2_coltot <- ggplot(df4_coltot,aes(y=Coltot2)) +geom_boxplot() + ylab('Colesterol Total Aparada (5%)(mg/100ml)') + ggtitle("Boxplot da variável Colesterol Total Aparada (5%)") + theme(plot.title = element_text(hjust = 0.5))
+box2_coltot
+
+```
+Como a variável Coltot é contínua, nota-se um número considerável de pessoas não observadas, causando uma descontinuidade no histograma pelos casos com colesterol grande. Tirando eles, aparando aproximadamente em 5%, obtemos que a distribuição de frequência dessa distribuição é parecida com a qui-quadrado com poucos graus de liberdade, com pouca simetria.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_hdl <- summary(HDL)
+df_hdl <- csa(HDL)
+names(df_hdl) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+sort_hdl <- sort(HDL)
+tab_hdl <- kable(df_hdl,booktabs=T,caption = 'Medidas de posição e de disperção da variável HDL ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_hdl
+df2_hdl <- data.frame(sort_hdl)
+hist_hdl <- ggplot(na.omit(df2_hdl),aes(x=sort_hdl)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("HDL(mg/100ml)") + ggtitle("Histograma da variável HDL") + theme(plot.title = element_text(hjust = 0.5))
+hist_hdl
+box_hdl <- ggplot(na.omit(df2_hdl),aes(y=sort_hdl)) + geom_boxplot() + ylab('HDL(mg/100ml)') + ggtitle("Box da variável HDL") + theme(plot.title = element_text(hjust = 0.5))
+box_hdl
+u1_hdl = (na.omit(HDL)-resumo_hdl[3])
+v1_hdl = (rev(na.omit(HDL))-resumo_hdl[3])
+simetria_hdl <- ggplot(na.omit(df2_hdl),aes(x=na.omit(u1_hdl),na.omit(v1_hdl))) + geom_point() + geom_line(aes(x=na.omit(v1_hdl),na.omit(v1_hdl)),linetype='dashed') +xlim(-50,50) + ylim(-50,50) + xlab('Dispesão Inferior(mg/100ml)') + ylab("Dispersão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável HDL") + theme(plot.title = element_text(hjust = 0.5))
+simetria_hdl
+
+```
+Como a variável HDL é contínua, nota-se também um número considerável de pessoas não observadas e, influenciada por um valor discrepante, o valor do desvio padrão é maior que a média e a população 'parece' simetrica, porém ela só é concentrada nos valores ao redor da média, mesmo aparando a variável ao tirar o valor discrepante, a variável aparenta normalidade, mas nota-se um comportameno descrecente.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_ldl <- summary(LDL)
+df_ldl <- csa(LDL)
+names(df_ldl) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+
+tab_ldl <- kable(df_ldl,booktabs=T,caption = 'Medidas de posição e de disperção da variável LDL ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_ldl
+df2_ldl <- data.frame(LDL)
+hist_ldl <- ggplot(na.omit(df2_ldl),aes(x=LDL)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("LDL(mg/100ml)")  + ggtitle("Histograma da variável LDL") + theme(plot.title = element_text(hjust = 0.5))
+hist_ldl
+box_ldl <- ggplot(na.omit(df2_ldl),aes(y=LDL)) + geom_boxplot() + ylab('LDL(mg/100ml)') + ggtitle("Boxplot da variável LDL") + theme(plot.title = element_text(hjust = 0.5))
+box_ldl
+sort_ldl <- sort(LDL)
+u1_ldl = (na.omit(LDL)-resumo_ldl[3])
+v1_ldl = (rev(na.omit(LDL))-resumo_ldl[3])
+simetria_ldl <- ggplot(na.omit(df2_ldl),aes(x=na.omit(u1_ldl),na.omit(v1_ldl))) + geom_point() + geom_line(aes(x=na.omit(v1_ldl),na.omit(v1_ldl)),linetype='dashed') +xlim(-100,100) + ylim(-100,100) + xlab("Dispesão Inferior(mg/100ml)") + ylab("Dispesão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável LDL") + theme(plot.title = element_text(hjust = 0.5))
+simetria_ldl
+```
+
+Como a variável LDL é contínua, nota-se também um número considerável de pessoas não observadas e, influenciada por  valores discrepante, a população 'pareça' simetrica, porém ela só é concentrada nos valores ao redor da média com comportamento decrescente.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_trig <- summary(Triglic)
+df_trig <- csa(Triglic)
+names(df_trig) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+
+tab_trig <- kable(df_trig,booktabs=T,caption = 'Medidas de posição e de disperção da variável Triglicerídeos  ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_trig
+df2_trig <- data.frame(Triglic)
+hist_trig <- ggplot(na.omit(df2_trig),aes(x=Triglic)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("riglicerídeos(mg/100ml)") + ggtitle("Histograma da variável Triglicerídeos") + theme(plot.title = element_text(hjust = 0.5))
+hist_trig
+box_trig <- ggplot(na.omit(df2_trig),aes(y=Triglic)) + geom_boxplot() + ylab('Triglicerídeos(mg/100ml)') + ggtitle("Boxplot da variável Triglicerídeos") + theme(plot.title = element_text(hjust = 0.5))
+box_trig
+sort_trig <- sort(Triglic)
+u1_trig = (na.omit(Triglic)-resumo_trig[3])
+v1_trig = (rev(na.omit(Triglic))-resumo_trig[3])
+simetria_trig <- ggplot(na.omit(df2_trig),aes(x=na.omit(u1_trig),na.omit(v1_trig))) + geom_point() + geom_line(aes(x=na.omit(v1_trig),na.omit(v1_trig)),linetype='dashed') +xlim(-200,200) + ylim(-200,200) + xlab("Dispersão Inferior(mg/100ml)") + ylab("Dispersão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável Triglicerídeos") + theme(plot.title = element_text(hjust = 0.5))
+simetria_trig
+```
+
+Como a variável Triglicerídeos(Triglic) é contínua, nota-se também um número considerável de pessoas não observadas, ela, em sua maioria dos casos, é concentrada nos valores ao redor da média, com comportamento decrescente, ou seja, quanto maior o número de triglicerídeos, menor o caso com pessoas com essa medida.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_glic <- summary(Glicose)
+df_glic <- csa(Glicose)
+names(df_glic) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+
+tab_glic <- kable(df_glic,booktabs=T,caption = 'Medidas de posição e de disperção da variável Glicose  ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_glic
+df2_glic <- data.frame(Glicose)
+hist_glic <- ggplot(na.omit(df2_glic),aes(x=Glicose)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("Glicose(mg/100ml)") + ggtitle("Histograma da variável Glicose") + theme(plot.title = element_text(hjust = 0.5)) 
+hist_glic
+box_glic <- ggplot(na.omit(df2_glic),aes(y=Glicose)) + geom_boxplot() + ylab('Glicose(mg/100ml)') + ggtitle("Boxplot da variável Glicose") + theme(plot.title = element_text(hjust = 0.5))
+box_glic
+sort_glic <- sort(Glicose)
+u1_glic = (na.omit(Glicose)-resumo_glic[3])
+v1_glic = (rev(na.omit(Glicose))-resumo_glic[3])
+simetria_glic <- ggplot(na.omit(df2_glic),aes(x=na.omit(u1_glic),na.omit(v1_glic))) + geom_point() + geom_line(aes(x=na.omit(v1_glic),na.omit(v1_glic)),linetype='dashed') +xlim(-200,200) + ylim(-200,200) + xlab("Dispesão Inferior(mg/100ml)") + ylab("Dispersão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável Glicose ") + theme(plot.title = element_text(hjust = 0.5))
+simetria_glic
+
+
+```
+
+Como a variável Glicose é contínua, nota-se também um número considerável de pessoas não observadas, ela, em sua maioria dos casos, é concentrada nos valores ao redor da média, com comportamento decrescente, ou seja, quanto maior o de glicose, menor o caso com pessoas com essa medida.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_urico <- summary(Acurico)
+df_urico <- csa(Acurico)
+names(df_urico) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+
+tab_urico <- kable(df_urico,booktabs=T,caption = 'Medidas de posição e de disperção da variável Ácido Úrico  ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_urico
+df2_urico <- data.frame(Acurico)
+hist_urico <- ggplot(na.omit(df2_urico),aes(x=Acurico)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("Ácido Úrico(mg/100ml)") + ggtitle("Histograma da variável Ácido Úrico") + theme(plot.title = element_text(hjust = 0.5))
+hist_urico
+box_urico <- ggplot(na.omit(df2_urico),aes(y=Acurico)) + geom_boxplot() + ylab('Ácido Úrico(mg/100ml)') + ggtitle("Boxplot da variável Ácido Úrico") + theme(plot.title = element_text(hjust = 0.5))
+box_urico
+u1_urico = (Acurico-resumo_urico[3])
+v1_urico = (rev(na.omit(Acurico))-resumo_urico[3])
+simetria_urico <- ggplot(na.omit(df2_urico),aes(x=na.omit(u1_urico),na.omit(v1_urico))) + geom_point() + geom_line(aes(x=na.omit(v1_urico),na.omit(v1_urico)),linetype='dashed') +xlim(-5,5) + ylim(-5,5) + xlab("Dispesão Inferior(mg/100ml)") + ylab("Dispersão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável Ácido Úrico") + theme(plot.title = element_text(hjust = 0.5))
+simetria_urico
+``` 
+
+Como a variável Ácido Úrico(Acurico) é contínua, nota-se também um número considerável de pessoas não observadas, ela, em sua maioria dos casos, é concentrada nos valores ao redor da média, com aparentem comportamento da distribuição normal, mesmo com baixa simetria entre os dados.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_colthd <- summary(ColtotHDL)
+df_colthd <- csa(ColtotHDL)
+names(df_colthd) <- c('Mínimo (mg/100ml)','1º Quartil (mg/100ml)','Mediana (mg/100ml)','Média (mg/100ml)','3º Quartil (mg/100ml)', 'Máximo (mg/100ml)','Desvio Padrão (mg/100)')
+
+tab_colthd <- kable(df_colthd,booktabs=T,caption = 'Medidas de posição e de disperção da variável Colesterol/HDL  ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_colthd
+df2_colthd <- data.frame(ColtotHDL)
+hist_colthd <- ggplot(na.omit(df2_colthd),aes(x=ColtotHDL)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("Colesterol/HDL(mg/100ml)") + ggtitle("Histograma da variável Colesterol/HDL") + theme(plot.title = element_text(hjust = 0.5))
+hist_colthd
+box_colthd <- ggplot(na.omit(df2_colthd),aes(y=ColtotHDL)) + geom_boxplot() + ylab('Colesterol/HDL(mg/100ml)') + ggtitle("Boxplot da variável Colesterol/HDL") + theme(plot.title = element_text(hjust = 0.5))
+box_colthd
+u1_colthd = (na.omit(ColtotHDL)-resumo_colthd[3])
+v1_colthd = (rev(na.omit(ColtotHDL))-resumo_colthd[3])
+simetria_colthd <- ggplot(na.omit(df2_colthd),aes(x=na.omit(u1_colthd),na.omit(v1_colthd))) + geom_point() + geom_line(aes(x=na.omit(v1_colthd),na.omit(v1_colthd)),linetype='dashed') +xlim(-5,5) + ylim(-5,5) + xlab("Dispersão Inferior(mg/100ml)") + ylab("Dispersão Superior(mg/100ml)") + ggtitle("Gráfico de simetria da variável Colesterol/HDL") + theme(plot.title = element_text(hjust = 0.5))
+simetria_colthd
+
+```
+
+Como a variável Colesterol/HDL(ColtotHdl) é contínua, nota-se também um número considerável de pessoas não observadas, ela, em sua maioria dos casos, é concentrada nos valores ao redor da média, com comportamento de distribuição normal.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+freq_nummed <- table(Nummed,useNA = c('ifany'))
+freq_nummed
+df_nummed <- data.frame('Nº de pacientes',freq_nummed[1],freq_nummed[2],freq_nummed[3],freq_nummed[4],freq_nummed[5],freq_nummed[6],freq_nummed[7],freq_nummed[8],freq_nummed[9],0,freq_nummed[10])
+names(df_nummed) <- c('Nº de remédios','0','1','2','3','4','5','6','7','8','9','10')
+tab_nummed <- kable(df_nummed,booktabs=T,caption = 'Número de ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_nummed
+df2_nummed <- data.frame(Nummed)
+hist_nummed <- ggplot(df2_nummed,aes(x=Nummed)) + geom_bar() + xlab('Número de remédios') + ylab('Quantidade de pessoas ') + ggtitle("Gráfico de barras da variável Número de Rémedios") + theme(plot.title = element_text(hjust = 0.5))
+hist_nummed
+```
+
+Como a variável Número de Medicamentos(Nummed) é discreta, nota-se, mesmo sendo uma variável discreta, percebe-se normalidade nos dados.
+
+```{r,echo=FALSE,warning=FALSE,fig.width=4,fig.height=4}
+library(kableExtra)
+library(knitr)
+library(magrittr)
+library(ggplot2)
+resumo_tempo <- summary(Tempesforco)
+df_tempo <- csa(Tempesforco)
+names(df_tempo) <- c('Mínimo (s)','1º Quartil (s)','Mediana (s)','Média (s)','3º Quartil (s)', 'Máximo (s','Desvio Padrão (s)')
+
+tab_tempo <- kable(df_tempo,booktabs=T,caption = 'Medidas de posição e de disperção da variável Tolerância ao esforço ') %>%
+  kable_styling(latex_options = c("striped",'HOLD_position'),full_width = TRUE)
+tab_tempo
+df2_tempo <- data.frame(Tempesforco)
+hist_tempo <- ggplot(na.omit(df2_tempo),aes(x=Tempesforco)) + geom_histogram(bins = 10) + ylab('Quantidade de Pessoas')  + xlab("Tolerância ao esforço(s)") + ggtitle("Histograma da variável Tolerância ao esforço") + theme(plot.title = element_text(hjust = 0.5))  
+hist_tempo
+box_tempo <- ggplot(na.omit(df2_tempo),aes(y=Tempesforco)) + geom_boxplot() + ylab('CTolerância ao esforço(s)') + ggtitle("Boxplot da variável Tolerância ao esforço") + theme(plot.title = element_text(hjust = 0.5))
+box_tempo
+sort_tempo <- sort(Tempesforco)
+u1_tempo = (na.omit(Tempesforco)-resumo_tempo[3])
+v1_tempo = (rev(na.omit(Tempesforco))-resumo_tempo[3])
+simetria_tempo <- ggplot(na.omit(df2_tempo),aes(x=na.omit(u1_tempo),na.omit(v1_tempo))) + geom_point() + geom_line(aes(x=na.omit(v1_tempo),na.omit(v1_tempo)),linetype='dashed') +xlim(-5,5) + ylim(-5,5) + xlab("Dispersão Inferior(s)") + ylab("Dispersão Inferior(s)") + ggtitle("Gráfico de simetria da variável Tolerância ao esforço")
+simetria_tempo
+```
+
+Como a variável Tolerância ao esforço(Tempoesforco) é contínua, mesmo com um número considerável de Não Observados, a distribuição de frequência aparente ter sinais de normalidade, porém pelo gráfico de simetrica essa ideia é enfraquecida.
